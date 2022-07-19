@@ -3,6 +3,7 @@ package queue_interface
 import (
 	"errors"
 	"fmt"
+	"reflect"
 )
 
 // TSlice 为了防止浪费数组的空间，使用环形的队列
@@ -14,11 +15,13 @@ type TSlice struct {
 	Size    int //当前队列的大小
 	MaxSize int //队列的最大容量
 	Value   interface{}
+	Type    reflect.Kind
 }
 
 var (
-	full  = errors.New("队列已经满了,无法加入元素")
-	empty = errors.New("队列是空的，无法取出元素")
+	full    = errors.New("队列已经满了,无法加入元素")
+	empty   = errors.New("队列是空的，无法取出元素")
+	typeErr = errors.New("与加入队列的第一个元素类型不符合")
 )
 
 func New(maxSize int) *TSlice {
@@ -37,14 +40,26 @@ func (t *TSlice) Top() (interface{}, error) {
 	}
 	return t.i[t.Head], nil
 }
+
 func (t *TSlice) Push(value interface{}) error {
+	//记录第一个push进来的类型
+
 	//判断队列是否已经到最大容量
 	if t.full() {
 		return full
 	}
+	if t.isSameType(value) {
+		return typeErr
+	}
 	t.Tail++
 	t.i[t.Tail] = value
 	t.Size++
+	//记录下第一个元素的type
+	if t.Size == 1 {
+		v := reflect.ValueOf(value)
+		t.Type = v.Kind()
+
+	}
 	return nil
 }
 func (t *TSlice) Pop() (interface{}, error) {
@@ -86,4 +101,12 @@ func (t *TSlice) empty() bool {
 		return true
 	}
 	return false
+}
+func (t *TSlice) isSameType(value interface{}) bool {
+	v := reflect.ValueOf(value)
+	if t.Type == v.Kind() {
+		return true
+	}
+	return false
+
 }

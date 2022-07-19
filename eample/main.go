@@ -7,12 +7,23 @@ import (
 
 func main() {
 	t := queue_interface.New(10)
-	for i := 0; i < 5; i++ {
-		err := t.Push(i)
-		if err != nil {
-			fmt.Println(err)
-		}
+
+	err := t.Push(1)
+	if err != nil {
+		fmt.Println(err)
 	}
+	err = t.Push("珍惜")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = t.Push(1)
+	if err != nil {
+		fmt.Println(err)
+	}
+	/*err := t.Push("珍惜")
+	if err != nil {
+		fmt.Println(err)
+	}*/
 	/*for i := 0; i < 5; i++ {
 		v, err := t.Pop()
 		if err != nil {
@@ -20,11 +31,11 @@ func main() {
 		}
 		fmt.Println(v)
 	}*/
-	v, err := t.Top()
+	/*v, err := t.Top()
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(v)
-	t.Show()
+	t.Show()*/
 
 }
